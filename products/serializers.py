@@ -57,7 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'producer', 'category', 'category_id',
             'name', 'description', 'price', 'unit', 'quantity_available',
-            'expiry_date', 'harvest_date', 'image_data', 'image_format', 'images',
+            'expiry_date', 'harvest_date', 'rating', 'image_data', 'image_format', 'images',
             'is_organic', 'is_local', 'is_active',
             'formatted_price', 'is_available', 'is_expiring_soon',
             'created_at', 'updated_at'
@@ -76,6 +76,11 @@ class ProductSerializer(serializers.ModelSerializer):
             return value
         except Category.DoesNotExist:
             raise serializers.ValidationError("Category does not exist.")
+
+    def validate_rating(self, value):
+        if value is not None and (value < 0.0 or value > 5.0):
+            raise serializers.ValidationError("Rating must be between 0.0 and 5.0")
+        return value
     
     def validate_expiry_date(self, value):
         """Validate expiry date is in the future."""
@@ -113,7 +118,7 @@ class ProductListSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'id', 'name', 'description', 'price', 'unit',
-            'formatted_price', 'quantity_available', 'expiry_date',
+            'formatted_price', 'quantity_available', 'expiry_date', 'rating',
             'image_data', 'image_format', 'is_organic', 'is_local', 'is_available',
             'is_expiring_soon', 'producer_name', 'producer_region',
             'category_name', 'category_icon', 'created_at'
@@ -134,7 +139,7 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             'category_id', 'name', 'description', 'price', 'unit',
-            'quantity_available', 'expiry_date', 'harvest_date',
+            'quantity_available', 'expiry_date', 'harvest_date', 'rating',
             'image_data', 'image_format', 'is_organic', 'is_local', 'is_active'
         ]
     

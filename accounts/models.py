@@ -2,9 +2,8 @@
 Models for user management.
 """
 from django.contrib.auth.models import AbstractUser
-from django.db import models
 from django.core.validators import RegexValidator
-from django.utils.translation import gettext_lazy as _
+from django.db import models
 
 
 class User(AbstractUser):
@@ -47,18 +46,18 @@ class User(AbstractUser):
         blank=True
     )
 
-    # Phone number with Cameroon format validation
+    # Phone number with French format validation
     phone_regex = RegexValidator(
-        regex=r'^(\+237|237)?[2368]\d{7,8}'
-        ,
-        message="Phone number must be in Cameroon format. Example: +237677123456 or 677123456"
+        regex=r'^(?:\+33|0)[1-9]\d{8}$',
+        message="Phone number must be in French format. Example: +33612345678 or 0612345678"
     )
+
     phone_number = models.CharField(
         'Phone Number',
         validators=[phone_regex],
         max_length=15,
         blank=True,
-        help_text='Cameroon phone number format: +237677123456'
+        help_text='French phone number format: +33612345678 or 0612345678'
     )
 
     # Avatar
@@ -128,16 +127,16 @@ class User(AbstractUser):
         return f"/users/{self.pk}/"
 
     def format_phone_number(self):
-        """Returns formatted phone number with +237 prefix."""
+        """Returns formatted phone number with +33 prefix."""
         if not self.phone_number:
             return ""
 
-        # Remove any existing prefix and spaces
-        number = self.phone_number.replace('+237', '').replace('237', '').replace(' ', '')
+        # Remove any existing prefix (+33 or 0) and spaces
+        number = self.phone_number.replace('+33', '').replace('0', '', 1).replace(' ', '')
 
-        # Add +237 prefix if it's a valid Cameroon number
-        if len(number) >= 9:
-            return f"+237{number}"
+        # Add +33 prefix if it's a valid French number (9 digits)
+        if len(number) == 9 and number.isdigit():
+            return f"+33{number}"
         return self.phone_number
 
 
@@ -160,62 +159,63 @@ class Producer(models.Model):
     Producer profile extending User model.
     Contains business information for local producers.
     """
-    
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name='producer_profile'
     )
-    
+
     business_name = models.CharField(
         'Nom de l\'entreprise',
         max_length=200,
         help_text='Nom de votre exploitation ou entreprise'
     )
-    
+
     description = models.TextField(
         'Description',
         blank=True,
         help_text='Décrivez votre activité, vos méthodes de production, etc.'
     )
-    
+
     siret = models.CharField(
         'Numéro SIRET',
         max_length=14,
         blank=True,
         help_text='Numéro SIRET de votre entreprise (optionnel pour MVP)'
     )
-    
+
     address = models.TextField(
         'Adresse complète',
+        blank=True,
         help_text='Adresse de votre exploitation'
     )
-    
+
     city = models.CharField(
         'Ville',
         max_length=100
     )
-    
+
     postal_code = models.CharField(
         'Code postal',
         max_length=10
     )
-    
+
     region = models.CharField(
         'Région',
         max_length=100,
         help_text='Région française pour faciliter la recherche locale'
     )
-    
+
     is_verified = models.BooleanField(
         'Producteur vérifié',
         default=False,
         help_text='Indique si le producteur a été vérifié par l\'équipe GreenCart'
     )
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         verbose_name = 'Producteur'
         verbose_name_plural = 'Producteurs'
@@ -225,10 +225,10 @@ class Producer(models.Model):
             models.Index(fields=['is_verified']),
             models.Index(fields=['city']),
         ]
-    
+
     def __str__(self):
         return f"{self.business_name} - {self.user.email}"
-    
+
     @property
     def full_address(self):
         """Retourne l'adresse complète formatée."""

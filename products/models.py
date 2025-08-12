@@ -128,6 +128,15 @@ class Product(models.Model):
         blank=True,
         help_text='DLC du produit (optionnel pour les produits non périssables)'
     )
+
+    rating = models.DecimalField(
+        'Note du produit',
+        default=0.0,
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True
+    )
     
     # Image principale du produit stockée en base64
     image_data = models.TextField(

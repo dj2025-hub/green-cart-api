@@ -12,10 +12,10 @@ API REST pour une plateforme de circuit court connectant producteurs locaux et c
 
 - [Vue d'ensemble](#-vue-densemble)
 - [Fonctionnalités MVP](#-fonctionnalités-mvp)
-- [API Endpoints](#-api-endpoints)
 - [Installation rapide](#-installation-rapide)
+- [API Endpoints](#-api-endpoints)
 - [Structure du projet](#-structure-du-projet)
-- [Configuration](#️-configuration)
+- [Configuration](#-configuration)
 - [Utilisation](#-utilisation)
 - [Développement](#-développement)
 - [Tests](#-tests)
@@ -113,6 +113,7 @@ cp .env.example .env
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 
 # Créer la base de données
+python manage.py makemigrations
 python manage.py migrate
 
 # Créer un super utilisateur
