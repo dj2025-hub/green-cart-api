@@ -95,19 +95,70 @@ venv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
 
-### 3. Configuration
+###  3. Configurer Stripe 
+
+#### Créer un compte Stripe et récupérer vos clés API
+- Rendez-vous sur [https://dashboard.stripe.com/register](https://dashboard.stripe.com/register) et créez un compte Stripe (ou connectez-vous si vous en avez déjà un).
+
+- Accédez à la section "Développeurs" > "Clés API" pour récupérer :
+   - La clé publique (`pk_test_...`)
+   - La clé secrète (`sk_test_...`)
+
+
+#### Installer Stripe CLI
+>  Sur Windows
+- Télécharger Stripe CLI pour Windows :  [stripe_1.29.0_windows_x86_64.zip](https://github.com/stripe/stripe-cli/releases/download/v1.29.0/stripe_1.29.0_windows_x86_64.zip)
+- Extraire l’archive ZIP téléchargée.
+- Placer l’exécutable `stripe.exe` dans un dossier de votre choix (par exemple `C:\stripe-cli\`).
+- Ajouter ce dossier à votre variable d’environnement `PATH` pour pouvoir utiliser la commande `stripe` depuis n’importe quel terminal.
+
+> Sur macOS
+- Installer via Homebrew :
+   ```bash
+   brew install stripe/stripe-cli/stripe
+   ```
+
+> Sur Linux
+- Télécharger et installer Stripe CLI :
+   ```bash
+   curl -L https://github.com/stripe/stripe-cli/releases/latest/download/stripe_$(uname -s)_$(uname -m).tar.gz | tar xz
+   sudo mv stripe /usr/local/bin
+   ```
+
+#### Récupérer la clé webhook Stripe
+
+1. Depuis le Dashboard Stripe (en production)
+- Accédez à "Développeurs" > "Webhooks".
+- Créez un nouvel endpoint webhook pour votre environnement local (ex: `http://localhost:8000/api/payments/webhook/`).
+- Copiez la clé secrète du webhook (`whsec_...`).
+
+2. Depuis Stripe CLI (en local)
+- Connectez-vous à Stripe CLI :
+   ```bash
+   stripe login
+   ```
+- Démarrez la connexion webhook :
+   ```bash
+   stripe listen --forward-to localhost:8000/api/payments/webhook/
+   ```
+- Après le démarrage, Stripe CLI affichera la clé webhook (`whsec_...`) dans le terminal.
+
+### 4. Configuration
 
 ```bash
 # Copier le fichier d'environnement
 cp .env.example .env
 
-# Créer une base de données PostgreSQL
+# Ajoutez ces clés dans votre fichier `.env` :
+STRIPE_PUBLIC_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Éditer .env avec vos configurations pour la base de donnée
- DB_NAME=
- DB_USER=
- DB_PASSWORD=
- DB_HOST=
+# Éditer `.env` avec vos configurations pour la base de donnée
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
 
 # Générer une nouvelle clé secrète (optionnel)
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
@@ -201,11 +252,12 @@ greencart-api/
 │   └── asgi.py               # Configuration ASGI
 ├── 📁 accounts/               # Gestion des utilisateurs et authentification
 ├── 📁 api/                    # API REST et endpoints génériques
-├── 📁 products/               # Gestion des produits
-├── 📁 orders/                 # Gestion des commandes
 ├── 📁 cart/                   # Gestion du panier
+├── 📁 comment/                # Gestion des commentaires et avis
+├── 📁 orders/                 # Gestion des commandes
+├── 📁 payments/               # Gestion des paiements
+├── 📁 products/               # Gestion des produits
 ├── 📁 static/                 # Fichiers statiques
-├── 📁 media/                  # Fichiers média (photos produits)
 ├── 📁 templates/              # Templates HTML (optionnel)
 ├── 📄 requirements.txt        # Dépendances production
 ├── 📄 requirements-dev.txt    # Dépendances développement
@@ -553,9 +605,9 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## 🔗 Liens utiles
 
-- [Signaler un bug](https://github.com/camcoder337/greencart-api/issues)
-- [Demander une fonctionnalité](https://github.com/camcoder337/greencart-api/issues)
-- [Documentation API](https://github.com/camcoder337/greencart-api/wiki)
+- [Signaler un bug](https://github.com/dj2025-hub/greencart-api/issues)
+- [Demander une fonctionnalité](https://github.com/dj2025-hub/greencart-api/issues)
+- [Documentation API](https://github.com/dj2025-hub/greencart-api/wiki)
 
 ## 🌍 Mission
 

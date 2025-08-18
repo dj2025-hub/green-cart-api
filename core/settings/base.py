@@ -53,6 +53,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
+    'django_extensions'
 ]
 
 LOCAL_APPS = [
@@ -61,6 +62,8 @@ LOCAL_APPS = [
     'products',
     'orders', 
     'cart',
+    'comments',
+    'payments',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -320,12 +323,17 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API REST pour une plateforme de circuit court connectant producteurs locaux et consommateurs écoresponsables',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
+    'SERVE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': False,
     'SCHEMA_PATH_PREFIX': r'/api/',
     'SCHEMA_PATH_PREFIX_TRIM': True,
     'SERVE_PERMISSIONS': ['rest_framework.permissions.AllowAny'],
     'SERVE_AUTHENTICATION': [],
-    'COMPONENT_NO_READ_ONLY_REQUIRED': True,
+    'COMPONENT_NO_READ_ONLY_REQUIRED': False,
+    'ENABLE_DUPLICATE_COMPONENT_NAMES': True,
+    'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
+    'SCHEMA_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
+    'SWAGGER_UI_FAVICON_HREF': 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌱</text></svg>',
     'APPEND_COMPONENTS': {
         'securitySchemes': {
             'tokenAuth': {
@@ -352,17 +360,10 @@ SPECTACULAR_SETTINGS = {
         'persistAuthorization': True,
         'displayOperationId': True,
         'filter': True,
-        'requestSnippetsEnabled': True,
-        'showExtensions': True,
-        'showCommonExtensions': True,
         'tryItOutEnabled': True,
-        'supportedSubmitMethods': ['get', 'post', 'put', 'delete', 'patch', 'head', 'options'],
         'docExpansion': 'none',
         'operationsSorter': 'alpha',
         'tagsSorter': 'alpha',
-        'layout': 'StandaloneLayout',
-        'requestInterceptor': '(request) => { console.log("Request:", request); return request; }',
-        'responseInterceptor': '(response) => { console.log("Response:", response); return response; }',
     },
     'SERVERS': [
         {'url': 'http://127.0.0.1:8000/api', 'description': 'Development server'},
@@ -375,10 +376,12 @@ SPECTACULAR_SETTINGS = {
         {'name': 'Cart', 'description': 'Gestion du panier d\'achat'},
         {'name': 'Orders', 'description': 'Gestion des commandes'},
         {'name': 'Producers', 'description': 'Gestion des producteurs'},
+        {'name': 'Comments', 'description': 'Gestion des commentaires et évaluations des produits'},
+        {'name': 'Payments', 'description': 'Gestion des paiements et transacions des commandes'},
     ],
     'EXTERNAL_DOCS': {
         'description': 'Documentation complète GreenCart',
-        'url': 'https://github.com/camcoder337/greencart-api',
+        'url': 'https://github.com/dj2025-hub/greencart-api',
     },
     'CONTACT': {
         'name': 'Équipe GreenCart',
@@ -388,3 +391,20 @@ SPECTACULAR_SETTINGS = {
         'name': 'MIT License',
     },
 }
+
+# ==============================================================================
+# STRIPE CONFIGURATION
+# ==============================================================================
+
+# Stripe API keys
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY', default='')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+
+# Stripe settings
+STRIPE_CURRENCY = config('STRIPE_CURRENCY', default='EUR')
+STRIPE_AUTOMATIC_TAX = config('STRIPE_AUTOMATIC_TAX', default=False, cast=bool)
+
+# Payment settings
+PAYMENT_SUCCESS_URL = config('PAYMENT_SUCCESS_URL', default='http://127.0.0.1:8000/payment/success')
+PAYMENT_CANCEL_URL = config('PAYMENT_CANCEL_URL', default='http://127.0.0.1:8000/payment/cancel')

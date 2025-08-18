@@ -74,6 +74,22 @@ def api_root(request):
                 'create_from_cart': '/api/orders/create-from-cart/',
                 'statistics': '/api/orders/statistics/',
             },
+            'payments': {
+                'payments': '/api/payments/payments/',
+                'refunds': '/api/payments/refunds/',
+                'config': '/api/payments/config/',
+                'webhook': '/api/payments/webhooks/stripe/',
+                'stats': '/api/payments/payments/stats/',
+            },
+            'comments': {
+                'list': '/api/comments/comments/',
+                'create': '/api/comments/comments/',
+                'product_comments': '/api/comments/comments/product/{product_id}/',
+                'my_comments': '/api/comments/comments/my-comments/',
+                'stats': '/api/comments/comments/stats/',
+                'popular': '/api/comments/comments/popular/',
+                'reports': '/api/comments/reports/',
+            },
             'documentation': {
                 'schema': '/api/schema/',
                 'swagger_ui': '/api/docs/',
@@ -118,6 +134,8 @@ urlpatterns = [
     path('products/', include('products.urls', namespace='products')),
     path('cart/', include('cart.urls', namespace='cart')),
     path('orders/', include('orders.urls', namespace='orders')),
+    path('comments/', include('comments.urls', namespace='comments')),
+    path('payments/', include('payments.urls', namespace='payments')),
 
     # Health check
     path('health/', api_root, name='health_check'),

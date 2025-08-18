@@ -119,8 +119,8 @@ class ProductListSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'price', 'unit',
             'formatted_price', 'quantity_available', 'expiry_date', 'rating',
-            'image_data', 'image_format', 'is_organic', 'is_local', 'is_available',
-            'is_expiring_soon', 'producer_name', 'producer_region',
+            'image_data', 'image_format', 'is_organic', 'is_local', 'is_active',
+            'is_available', 'is_expiring_soon', 'producer_name', 'producer_region',
             'category_name', 'category_icon', 'created_at'
         ]
     
@@ -133,14 +133,16 @@ class ProductListSerializer(serializers.ModelSerializer):
 class ProductCreateUpdateSerializer(serializers.ModelSerializer):
     """Serializer for creating/updating products (producer only)."""
     
-    category_id = serializers.UUIDField()
+    category_id = serializers.UUIDField(write_only=True)
+    category = CategorySerializer(read_only=True)
     
     class Meta:
         model = Product
         fields = [
-            'category_id', 'name', 'description', 'price', 'unit',
+            'id', 'category_id', 'category', 'name', 'description', 'price', 'unit',
             'quantity_available', 'expiry_date', 'harvest_date', 'rating',
-            'image_data', 'image_format', 'is_organic', 'is_local', 'is_active'
+            'image_data', 'image_format', 'is_organic', 'is_local', 'is_active',
+            'is_available', 'is_expiring_soon',
         ]
     
     def validate_category_id(self, value):

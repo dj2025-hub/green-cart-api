@@ -99,7 +99,7 @@ SPECTACULAR_SETTINGS = {
     },
     'SERVERS': [
         {'url': 'https://gc-api-3yjt.onrender.com/api', 'description': 'Production server'},
-        {'url': 'http://localhost:8000/api', 'description': 'Development server'},
+        {'url': 'http://127.0.0.1:8000/api', 'description': 'Development server'},
     ],
 }
 
