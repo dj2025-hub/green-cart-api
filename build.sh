@@ -27,4 +27,4 @@ echo "✅ Deployment completed successfully!"
 
 # Start the application
 echo "🌐 Starting Gunicorn server..."
-exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers ${WORKERS:-3} --timeout 120 core.wsgi:application
+# exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers ${WORKERS:-3} --timeout 120 core.wsgi:application
