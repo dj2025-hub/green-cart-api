@@ -8,10 +8,6 @@ echo "🚀 Starting GreenCart API deployment..."
 # Créer l'environnement virtuel
 python3.13 -m venv venv
 
-# Activer l'environnement virtuel
-# Sur Windows:
-venv\Scripts\activate
-
 # Installer les dépendances
 pip install -r requirements.txt
 
