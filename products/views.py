@@ -129,7 +129,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         # Base queryset - only active products for public
         if self.action in ['list', 'retrieve']:
-            queryset = Product.objects.filter(is_active=True)
+            queryset = Product.objects.filter(is_active=True, quantity_available__gt=0)
         else:
             queryset = Product.objects.all()
         
@@ -235,7 +235,24 @@ class ProductViewSet(viewsets.ModelViewSet):
         tags=['Products'],
         summary="Produits par région",
         description="Récupère les statistiques de produits groupés par région de producteur",
-        responses={200: OpenApiExample("Statistiques par région", value=[{"producer__region": "Île-de-France", "product_count": 10}])}
+        responses={
+            200: {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "producer__region": {"type": "string"},
+                        "product_count": {"type": "integer"}
+                    }
+                }
+            }
+        },
+        examples=[
+            OpenApiExample(
+                "Statistiques par région",
+                value=[{"producer__region": "Île-de-France", "product_count": 10}]
+            )
+        ]
     )
     @action(detail=False, methods=['get'])
     def by_region(self, request):

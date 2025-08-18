@@ -18,10 +18,11 @@ class Order(models.Model):
     # Statuts des commandes
     STATUS_CHOICES = [
         ('PENDING', 'En attente'),
-        ('CONFIRMED', 'Confirmée'),
-        ('CANCELLED', 'Annulée'),
+        ('PROCESSING', 'En préparation'),
+        ('READY', 'Prête'),
         ('SHIPPED', 'Expédiée'),
         ('DELIVERED', 'Livrée'),
+        ('CANCELLED', 'Annulée'),
     ]
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -175,7 +176,7 @@ class Order(models.Model):
     @property
     def can_be_cancelled(self):
         """Vérifie si la commande peut être annulée."""
-        return self.status in ['PENDING', 'CONFIRMED']
+        return self.status in ['PENDING', 'PROCESSING', 'READY']
     
     @property
     def is_completed(self):
@@ -195,9 +196,9 @@ class Order(models.Model):
         return False
     
     def confirm(self):
-        """Confirme la commande."""
+        """Confirme la commande et la passe en préparation."""
         if self.status == 'PENDING':
-            self.status = 'CONFIRMED'
+            self.status = 'PROCESSING'
             self.confirmed_at = timezone.now()
             self.save(update_fields=['status', 'confirmed_at'])
             return True

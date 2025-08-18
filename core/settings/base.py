@@ -323,7 +323,6 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API REST pour une plateforme de circuit court connectant producteurs locaux et consommateurs écoresponsables',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'SERVE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': False,
     'SCHEMA_PATH_PREFIX': r'/api/',
     'SCHEMA_PATH_PREFIX_TRIM': True,
@@ -332,8 +331,9 @@ SPECTACULAR_SETTINGS = {
     'COMPONENT_NO_READ_ONLY_REQUIRED': False,
     'ENABLE_DUPLICATE_COMPONENT_NAMES': True,
     'SCHEMA_COERCE_PATH_PK_SUFFIX': True,
-    'SCHEMA_GENERATOR_CLASS': 'drf_spectacular.generators.SchemaGenerator',
-    'SWAGGER_UI_FAVICON_HREF': 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌱</text></svg>',
+    'SWAGGER_UI_DIST': 'SIDECAR',  # Use sidecar distribution
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',  # Use sidecar distribution
     'APPEND_COMPONENTS': {
         'securitySchemes': {
             'tokenAuth': {
@@ -364,6 +364,12 @@ SPECTACULAR_SETTINGS = {
         'docExpansion': 'none',
         'operationsSorter': 'alpha',
         'tagsSorter': 'alpha',
+        'defaultModelsExpandDepth': 1,
+        'defaultModelExpandDepth': 1,
+        'displayRequestDuration': True,
+        'showExtensions': True,
+        'showCommonExtensions': True,
+        'supportedSubmitMethods': ['get', 'post', 'put', 'delete', 'patch'],
     },
     'SERVERS': [
         {'url': 'http://127.0.0.1:8000/api', 'description': 'Development server'},
@@ -390,6 +396,12 @@ SPECTACULAR_SETTINGS = {
     'LICENSE': {
         'name': 'MIT License',
     },
+    'PREPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.preprocess_exclude_path_format',
+    ],
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.postprocess_schema_enums',
+    ],
 }
 
 # ==============================================================================

@@ -189,11 +189,12 @@ class UpdateOrderStatusSerializer(serializers.Serializer):
         
         # Define valid status transitions
         valid_transitions = {
-            'PENDING': ['CONFIRMED', 'CANCELLED'],
-            'CONFIRMED': ['SHIPPED', 'CANCELLED'],
+            'PENDING': ['PROCESSING', 'CANCELLED'],
+            'PROCESSING': ['READY', 'CANCELLED'],
+            'READY': ['SHIPPED', 'CANCELLED'],
             'SHIPPED': ['DELIVERED'],
-            'CANCELLED': [],  # Cannot change from cancelled
-            'DELIVERED': []   # Cannot change from delivered
+            'DELIVERED': [],
+            'CANCELLED': [],
         }
         
         if new_status not in valid_transitions.get(current_status, []):
@@ -218,7 +219,7 @@ class UpdateOrderStatusSerializer(serializers.Serializer):
         
         # Update timestamp fields
         now = timezone.now()
-        if new_status == 'CONFIRMED':
+        if new_status == 'PROCESSING':
             order.confirmed_at = now
         elif new_status == 'SHIPPED':
             order.shipped_at = now

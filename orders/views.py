@@ -208,7 +208,7 @@ def my_orders(request):
         # Consumer - get their own orders
         orders = Order.objects.filter(consumer=user).order_by('-order_date')
     
-    serializer = OrderListSerializer(orders, many=True)
+    serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
 
@@ -224,7 +224,7 @@ def my_orders(request):
         )
     ],
     responses={
-        200: OrderListSerializer(many=True),
+        200: OrderSerializer(many=True),
         403: OpenApiResponse(description="Only producers can access this endpoint")
     }
 )
@@ -248,7 +248,7 @@ def producer_orders(request):
     if status_filter:
         orders = orders.filter(status=status_filter)
     
-    serializer = OrderListSerializer(orders, many=True)
+    serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
 
@@ -339,7 +339,8 @@ def create_order_from_cart(request):
                 "application/json": {
                     "total_orders": 25,
                     "pending_orders": 3,
-                    "confirmed_orders": 5,
+                    "processing_orders": 4,
+                    "ready_orders": 2,
                     "shipped_orders": 2,
                     "delivered_orders": 14,
                     "cancelled_orders": 1,
@@ -363,7 +364,8 @@ def order_statistics(request):
         stats = {
             'total_orders': orders.count(),
             'pending_orders': orders.filter(status='PENDING').count(),
-            'confirmed_orders': orders.filter(status='CONFIRMED').count(),
+            'processing_orders': orders.filter(status='PROCESSING').count(),
+            'ready_orders': orders.filter(status='READY').count(),
             'shipped_orders': orders.filter(status='SHIPPED').count(),
             'delivered_orders': orders.filter(status='DELIVERED').count(),
             'cancelled_orders': orders.filter(status='CANCELLED').count(),
@@ -381,7 +383,8 @@ def order_statistics(request):
         stats = {
             'total_orders': orders.count(),
             'pending_orders': orders.filter(status='PENDING').count(),
-            'confirmed_orders': orders.filter(status='CONFIRMED').count(),
+            'processing_orders': orders.filter(status='PROCESSING').count(),
+            'ready_orders': orders.filter(status='READY').count(),
             'shipped_orders': orders.filter(status='SHIPPED').count(),
             'delivered_orders': orders.filter(status='DELIVERED').count(),
             'cancelled_orders': orders.filter(status='CANCELLED').count(),

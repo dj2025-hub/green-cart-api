@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema_field
 from .models import Comment, CommentReport
 from products.serializers import ProductSerializer
 
@@ -41,14 +42,16 @@ class CommentSerializer(serializers.ModelSerializer):
             )
         ]
     
-    def get_can_edit(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_can_edit(self, obj) -> bool:
         """Vérifier si l'utilisateur peut modifier le commentaire."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return request.user == obj.user or request.user.is_staff
         return False
     
-    def get_can_delete(self, obj):
+    @extend_schema_field(serializers.BooleanField)
+    def get_can_delete(self, obj) -> bool:
         """Vérifier si l'utilisateur peut supprimer le commentaire."""
         request = self.context.get('request')
         if request and request.user.is_authenticated:

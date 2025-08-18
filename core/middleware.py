@@ -36,11 +36,10 @@ class CSRFDebugMiddleware(MiddlewareMixin):
 
 class SwaggerCSRFExemptMiddleware(MiddlewareMixin):
     """
-    Middleware to handle CSRF exemption for Swagger UI.
+    Middleware to handle CSRF exemption for Swagger UI and API documentation.
     """
     
     def process_view(self, request, view_func, view_args, view_kwargs):
-        # Exempt Swagger paths from CSRF
         exempt_paths = [
             '/api/docs/',
             '/api/redoc/', 
@@ -51,3 +50,13 @@ class SwaggerCSRFExemptMiddleware(MiddlewareMixin):
             setattr(request, '_dont_enforce_csrf_checks', True)
         
         return None
+    
+    def process_response(self, request, response):
+        if request.method == 'OPTIONS' and request.path.startswith('/api/'):
+            response['Access-Control-Allow-Origin'] = request.META.get('HTTP_ORIGIN', '*')
+            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
+            response['Access-Control-Allow-Headers'] = 'Accept, Accept-Language, Content-Type, Authorization, X-CSRFToken, X-Requested-With'
+            response['Access-Control-Max-Age'] = '86400'
+            response.status_code = 200
+            
+        return response
